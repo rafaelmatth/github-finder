@@ -95,12 +95,17 @@ body {
 }
 .data-user {
   width: 20em;
-  padding: 5px 20px;
+  padding: 10px 20px;
   background-color: #fff;
   border: 1px solid #d1d5da;
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
 }
+.data-user p{
+  margin-bottom: 10px;
+}
+
+
 .stars {
   margin-bottom: 1em;
   background-color: #fff;
@@ -149,15 +154,19 @@ body {
     height: 150px;
     font-size: 13px;
   }
-  .mapboxgl-canvas {
-    width: 340px !important;
-  }
-  .map {
+  .leaflet-container {
     width: 340px;
+    height: 190px;
     position: relative;
     margin: 0 auto;
   }
   .container-block {
     padding: 2em 0.5em;
   }
+}
+.leaflet-container {
+  width: 450px;
+  height: 190px;
+  position: relative;
+  margin: 0 auto;
 }

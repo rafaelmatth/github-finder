@@ -27,7 +27,6 @@ class App extends Component {
   getUser = (e) => {
     const user = this.textInput.value;
     const { url, client_id, client_secret, count, sort } = this.state.github;
-    var location = user.location
     axios
       .get(
         `${url}/${user}?client_id=${client_id}&client_secret=${client_secret}`
@@ -36,10 +35,18 @@ class App extends Component {
       .get(`${url}/${user}/starred?per_page=${count}&sort=${sort}&client_id=${client_id}&client_secret=${client_secret}`)
       .then(({ data }) => this.setState({ stars: data }));
   }
+  renderMap = () => {
+    const { user } = this.state
+    var location = user.location
+    axios
+      .get(`https://geocode.xyz/${location}?json=1`)
+      .then(({ data }) => this.setState({ geo: data }));
+  }
   render() {
     const { user, stars, geo } = this.state
-    const lat = geo.features ? geo.features[0].geometry.coordinates[0, 1] : null
-    const lon = geo.features ? geo.features[0].geometry.coordinates[0, 0] : null
+    const lat = geo.latt
+    const lon = geo.longt
+
     return (
       <div className="App">
         <Navbar />
@@ -48,17 +55,19 @@ class App extends Component {
           <input className="finderInput" ref={input => this.textInput = input} id="search" type="text" className="form-control" required />
           <button className="button-search" onClick={this.getUser}>Pesquisar</button>
         </div>
-        {this.state.user.length !== 0 ? (
+        {this.state.user.length !== 0 && this.state.geo.latt ? (
           <div>
             <div className="dd">
               <Profile user={user} />
-              <div className="map">                
+              <div className="map">
+                <Mapa lat={lat} lon={lon} />
               </div>
             </div>
             <div className="container-block">
               {stars.map((item, key) => <Stars key={key} stars={item} />)}
             </div>
-          </div> ) : null }                    
+          </div>) : null}
+        {this.state.user.length !== 0 && !this.state.geo.features ? this.renderMap() : null}
       </div>
     );
   }
