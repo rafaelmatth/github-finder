@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
-import Navbar from './Navbar';
+
+import Navbar from './components/Navbar';
 import axios from 'axios'
-import Profile from './Profile';
+import Profile from './components/Profile';
 import "typeface-roboto";
-import Stars from './Stars';
-import Map from './Mapa';
-
-const x = (stars, key) => {
-  return (<Stars stars={stars}/>)
-}
-
+import Stars from './components/Stars';
+import Mapa from './components/Mapa';
 
 class App extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
       github: {
@@ -25,56 +21,46 @@ class App extends Component {
       },
       user: [],
       stars: [],
-      geo: {},    
+      geo: {},
     }
   }
   getUser = (e) => {
     const user = this.textInput.value;
-    const{ url, client_id, client_secret, count, sort } = this.state.github;
+    const { url, client_id, client_secret, count, sort } = this.state.github;
     var location = user.location
     axios
-    .get(
-      `${url}/${user}?client_id=${client_id}&client_secret=${client_secret}`
-    ).then(({ data }) => this.setState({user: data}));
+      .get(
+        `${url}/${user}?client_id=${client_id}&client_secret=${client_secret}`
+      ).then(({ data }) => this.setState({ user: data }));
     axios
-    .get(`${url}/${user}/starred?per_page=${count}&sort=${sort}&client_id=${client_id}&client_secret=${client_secret}`)
-    .then(({ data }) => this.setState({stars:data}));
+      .get(`${url}/${user}/starred?per_page=${count}&sort=${sort}&client_id=${client_id}&client_secret=${client_secret}`)
+      .then(({ data }) => this.setState({ stars: data }));
   }
-  renderMap = () => {
+  render() {
     const { user, stars, geo } = this.state
-    var location = user.location
-    axios
-    .get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${location}.json?access_token=pk.eyJ1IjoicmFmYWVsbWF0dGgiLCJhIjoiY2s1NXFtN2pmMDNjZDNscXFpeWF1dG5xYiJ9.tdfplKWNUzUYGRq6SKcz-g&limit=1`)
-    .then(({ data }) => this.setState({geo:data}));
-  }
-
-  render(){
-    const { user, stars, geo } = this.state
-    const lat  = geo.features ? geo.features[0].geometry.coordinates[0,1] : null 
-    const lon = geo.features ? geo.features[0].geometry.coordinates[0,0] : null
-  return (
-    <div className="App">
-    <Navbar />
-    <p className="finderTitle"> Busque por algum usuário do github</p>
-    <div className="search-container">
-      <input className="finderInput" ref={input => this.textInput = input} id="search" type="text" className="form-control" required />
-      <button className="button-search" onClick={ this.getUser }>Pesquisar</button>
-    </div>
-    {this.state.geo.features ? (  <div>
-      <div className="dd">
-      <Profile user={user}/>
-      <div className="map">
-      <Map lat={lat} lon={lon}/>
+    const lat = geo.features ? geo.features[0].geometry.coordinates[0, 1] : null
+    const lon = geo.features ? geo.features[0].geometry.coordinates[0, 0] : null
+    return (
+      <div className="App">
+        <Navbar />
+        <p className="finderTitle"> Busque por algum usuário do github</p>
+        <div className="search-container">
+          <input className="finderInput" ref={input => this.textInput = input} id="search" type="text" className="form-control" required />
+          <button className="button-search" onClick={this.getUser}>Pesquisar</button>
+        </div>
+        {this.state.user.length !== 0 ? (
+          <div>
+            <div className="dd">
+              <Profile user={user} />
+              <div className="map">                
+              </div>
+            </div>
+            <div className="container-block">
+              {stars.map((item, key) => <Stars key={key} stars={item} />)}
+            </div>
+          </div> ) : null }                    
       </div>
-      </div>
-      <div className="container-block">
-      {stars.map((item, key) => <Stars key={key} stars={item} />)}
-      </div>
-    </div>) : null
-  }
-    {this.state.user.length !== 0 && !this.state.geo.features ? this.renderMap(): null}
-  </div> 
-  );
+    );
   }
 }
 
